@@ -1,16 +1,11 @@
-import "dart:io";
-
-import "package:file_picker/file_picker.dart";
-import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
-import "package:flutter/services.dart";
 import "package:input_slider/input_slider.dart";
 
 import "font.dart";
 import "tech_app.dart";
 
 void main() {
-  runApp(const FontProvider(child: MyApp()));
+  runApp(const FontProvider(app: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -24,15 +19,15 @@ class MyApp extends StatelessWidget {
       secondary: Colors.deepPurpleAccent,
       // themeMode: ThemeMode.light,
       themeMode: ThemeMode.dark,
-      fontFamily: FontSettings.of(context)!.fontFamilyData,
-      fontSizeFactor: FontSettings.of(context)!.fontSizeFactorData,
-      home: MyHomePage(title: "Flutter User Font Test"),
+      fontFamily: FontSettings.of(context)!.fontFamily,
+      fontSizeFactor: FontSettings.of(context)!.fontSizeFactor,
+      home: const MyHomePage(title: "Flutter User Font Test"),
     );
   }
 }
 
 class MyHomePage extends StatelessWidget {
-  MyHomePage({required this.title, super.key});
+  const MyHomePage({required this.title, super.key});
 
   final String title;
 
@@ -53,27 +48,7 @@ class MyHomePage extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () async {
-                  FilePickerResult? result =
-                      await FilePicker.platform.pickFiles(
-                    type: FileType.custom,
-                    allowedExtensions: ["ttf", "otf"],
-                  );
-
-                  if (result == null) return; // Dialog was canceled
-
-                  String fontName = result.files.single.name;
-                  FontLoader custom = FontLoader(fontName);
-                  if (kIsWeb) {
-                    custom.addFont(_loadFromBytes(result.files.single.bytes!));
-                  } else {
-                    custom.addFont(_loadFromPath(result.files.single.path!));
-                  }
-
-                  await custom.load().then((_) {
-                    FontSettings.of(context)!.state.changeFontFamily(fontName);
-                  });
-                },
+                onPressed: () => FontProvider.fontSelectPopup(context),
                 child: const Text("Upload Font"),
               ),
               const SizedBox(height: 20),
@@ -83,7 +58,7 @@ class MyHomePage extends StatelessWidget {
               InputSlider(
                 min: 0.5,
                 max: 3.0,
-                defaultValue: 1.0,
+                defaultValue: FontSettings.of(context)!.fontSizeFactor,
                 borderRadius: BorderRadius.circular(4),
                 decimalPlaces: 2,
                 textFieldSize: const Size(100, 50),
@@ -96,14 +71,5 @@ class MyHomePage extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Future<ByteData> _loadFromBytes(Uint8List bytes) async {
-    return ByteData.view(bytes.buffer);
-  }
-
-  Future<ByteData> _loadFromPath(String path) async {
-    File file = File(path);
-    return file.readAsBytes().then(_loadFromBytes);
   }
 }

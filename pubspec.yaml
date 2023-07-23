@@ -29,7 +29,6 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   file_picker: ^5.3.2
-  flutter_riverpod: ^2.3.0
   flutter:
     sdk: flutter
   input_slider: ^0.3.1

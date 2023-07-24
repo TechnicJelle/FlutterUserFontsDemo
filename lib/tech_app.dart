@@ -1,55 +1,48 @@
 import "package:flutter/material.dart";
 
-class TechApp extends StatelessWidget {
-  final String title;
+class TechApp extends MaterialApp {
   final Color primary;
   final Color secondary;
-  final ThemeMode themeMode;
   final String? fontFamily;
   final double? fontSizeFactor;
-  final Widget home;
-  const TechApp({
-    required this.title,
+  TechApp({
+    required super.title,
+    super.debugShowCheckedModeBanner = false,
     required this.primary,
     required this.secondary,
-    required this.themeMode,
+    required super.themeMode,
     this.fontFamily,
     this.fontSizeFactor,
-    required this.home,
+    super.routes,
+    required super.home,
     super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: title,
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.light(
-          primary: primary,
-          secondary: secondary,
-        ),
-      ),
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.dark(
-          primary: primary,
-          secondary: secondary,
-        ),
-      ),
-      themeMode: themeMode,
-      home: Builder(
-        builder: (themeContext) => Theme(
-          data: Theme.of(themeContext).copyWith(
+  }) : super(
+          theme: ThemeData(
             useMaterial3: false,
             appBarTheme: AppBarTheme(color: primary),
-            textTheme: Theme.of(themeContext).textTheme.apply(
-                  fontSizeFactor: fontSizeFactor ?? 1.0,
-                  fontFamily: fontFamily,
-                ),
+            colorScheme: ColorScheme.light(
+              primary: primary,
+              secondary: secondary,
+            ),
           ),
-          child: home,
-        ),
-      ),
-    );
-  }
+          darkTheme: ThemeData(
+            useMaterial3: false,
+            appBarTheme: AppBarTheme(color: primary),
+            colorScheme: ColorScheme.dark(
+              primary: primary,
+              secondary: secondary,
+            ),
+          ),
+          builder: (BuildContext context, Widget? child) {
+            return Theme(
+              data: Theme.of(context).copyWith(
+                textTheme: Theme.of(context).textTheme.apply(
+                      fontSizeFactor: fontSizeFactor ?? 1.0,
+                      fontFamily: fontFamily,
+                    ),
+              ),
+              child: child!,
+            );
+          },
+        );
 }

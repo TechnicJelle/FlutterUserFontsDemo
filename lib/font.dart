@@ -1,9 +1,15 @@
+import "dart:async";
+import "dart:convert";
 import "dart:io";
 
 import "package:file_picker/file_picker.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
+import "package:shared_preferences/shared_preferences.dart";
+
+const String storageKeyFontBytes = "custom_font_bytes";
+const String storageKeyFontScale = "custom_font_scale";
 
 class FontProvider extends StatefulWidget {
   final Widget app;
@@ -22,25 +28,16 @@ class FontProvider extends StatefulWidget {
     if (result == null) return; // Dialog was canceled
 
     String fontName = result.files.single.name;
-    FontLoader custom = FontLoader(fontName);
+
+    Uint8List bytes;
     if (kIsWeb) {
-      custom.addFont(_loadFromBytes(result.files.single.bytes!));
+      bytes = result.files.single.bytes!;
     } else {
-      custom.addFont(_loadFromPath(result.files.single.path!));
+      File sourceFile = File(result.files.single.path!);
+      bytes = await sourceFile.readAsBytes();
     }
 
-    await custom.load().then((_) {
-      FontSettings.of(context)!.state.changeFontFamily(fontName);
-    });
-  }
-
-  static Future<ByteData> _loadFromBytes(Uint8List bytes) async {
-    return ByteData.view(bytes.buffer);
-  }
-
-  static Future<ByteData> _loadFromPath(String path) async {
-    File file = File(path);
-    return file.readAsBytes().then(_loadFromBytes);
+    FontSettings.of(context)!._state._changeFontFamily(fontName, bytes);
   }
 }
 
@@ -48,15 +45,36 @@ class FontProviderState extends State<FontProvider> {
   String? _fontFamily;
   double? _fontSizeFactor;
 
-  void changeFontFamily(String newFontFamily) {
+  Timer? _fontSizeTimer;
+
+  static Future<ByteData> _loadFromBytes(Uint8List bytes) async {
+    return ByteData.view(bytes.buffer);
+  }
+
+  Future<void> _changeFontFamily(String fontName, Uint8List bytes) async {
+    FontLoader custom = FontLoader(fontName);
+    custom.addFont(_loadFromBytes(bytes));
+    await custom.load();
+
     setState(() {
-      _fontFamily = newFontFamily;
+      _fontFamily = fontName;
+    });
+
+    SharedPreferences.getInstance().then((SharedPreferences prefs) {
+      return prefs.setString(storageKeyFontBytes, base64Encode(bytes));
     });
   }
 
   void changeFontSizeFactor(double newFontSizeFactor) {
     setState(() {
       _fontSizeFactor = newFontSizeFactor;
+    });
+
+    _fontSizeTimer?.cancel();
+    _fontSizeTimer = Timer(const Duration(milliseconds: 500), () {
+      SharedPreferences.getInstance().then((SharedPreferences prefs) {
+        return prefs.setDouble(storageKeyFontScale, newFontSizeFactor);
+      });
     });
   }
 
@@ -69,24 +87,46 @@ class FontProviderState extends State<FontProvider> {
       child: widget.app,
     );
   }
+
+  @override
+  void initState() {
+    super.initState();
+
+    SharedPreferences.getInstance().then((SharedPreferences prefs) {
+      String? fontString = prefs.getString(storageKeyFontBytes);
+      if (fontString != null) {
+        Uint8List bytes = base64Decode(fontString);
+        _changeFontFamily("custom", bytes);
+      }
+
+      double? fontSizeFactor = prefs.getDouble(storageKeyFontScale);
+      if (fontSizeFactor != null) {
+        changeFontSizeFactor(fontSizeFactor);
+      }
+    });
+  }
 }
 
 class FontSettings extends InheritedWidget {
   final String? _fontFamilyData;
   final double? _fontSizeFactorData;
-  final FontProviderState state;
+
+  final FontProviderState _state;
 
   const FontSettings({
-    required fontFamilyData,
-    required fontSizeFactorData,
-    required this.state,
+    required String? fontFamilyData,
+    required double? fontSizeFactorData,
+    required FontProviderState state,
     required super.child,
     super.key,
-  })  : _fontFamilyData = fontFamilyData,
+  })  : _state = state,
+        _fontFamilyData = fontFamilyData,
         _fontSizeFactorData = fontSizeFactorData;
 
   String? get fontFamily => _fontFamilyData;
+
   double get fontSizeFactor => _fontSizeFactorData ?? 1.0;
+  set fontSizeFactor(double num) => _state.changeFontSizeFactor(num);
 
   static FontSettings? of(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<FontSettings>();

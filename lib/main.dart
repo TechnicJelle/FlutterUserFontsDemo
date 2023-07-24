@@ -1,7 +1,10 @@
+import "dart:math";
+
 import "package:flutter/material.dart";
-import "package:input_slider/input_slider.dart";
+import "package:lorem_ipsum/lorem_ipsum.dart";
 
 import "font.dart";
+import "settings.dart";
 import "tech_app.dart";
 
 void main() {
@@ -22,6 +25,9 @@ class MyApp extends StatelessWidget {
       fontFamily: FontSettings.of(context)!.fontFamily,
       fontSizeFactor: FontSettings.of(context)!.fontSizeFactor,
       home: const MyHomePage(title: "Flutter User Font Test"),
+      routes: {
+        "/settings": (context) => const SettingsPage(),
+      },
     );
   }
 }
@@ -36,40 +42,55 @@ class MyHomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
-      ),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 400),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                "Click to change the app's font:",
+        actions: [
+          IconButton(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                settings: const RouteSettings(name: "/settings"),
+                builder: (context) => const SettingsPage(),
               ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () => FontProvider.fontSelectPopup(context),
-                child: const Text("Upload Font"),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                "Slide to change the app's font scale:",
-              ),
-              InputSlider(
-                min: 0.5,
-                max: 3.0,
-                defaultValue: FontSettings.of(context)!.fontSizeFactor,
-                borderRadius: BorderRadius.circular(4),
-                decimalPlaces: 2,
-                textFieldSize: const Size(100, 50),
-                onChange: (double num) {
-                  FontSettings.of(context)!.state.changeFontSizeFactor(num);
-                },
-              ),
-            ],
+            ),
+            icon: const Icon(Icons.settings),
           ),
-        ),
+        ],
       ),
+      body: ListView.builder(
+        padding: const EdgeInsets.all(20),
+        itemBuilder: (context, index) {
+          return const Padding(
+            padding: EdgeInsets.only(bottom: 20),
+            child: Paragraph(),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class Paragraph extends StatelessWidget {
+  const Paragraph({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          loremIpsum(words: Random().nextInt(5) + 2, paragraphs: 1),
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        const SizedBox(height: 2),
+        Text(
+          loremIpsum(
+            paragraphs: Random().nextInt(3) + 1,
+            words: Random().nextInt(300) + 100,
+          ),
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+      ],
     );
   }
 }

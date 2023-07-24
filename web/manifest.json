@@ -1,11 +1,11 @@
 {
-    "name": "user_fonts_test",
-    "short_name": "user_fonts_test",
+    "name": "Flutter User Fonts Demo",
+    "short_name": "Flutter User Fonts Demo",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#673AB7",
+    "theme_color": "#673AB7",
+    "description": "A Flutter tech demo that allows users to upload any font they wish to use for the whole app to use.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

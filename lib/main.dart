@@ -17,14 +17,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TechApp(
-      title: "Flutter User Font Test",
+      title: "Flutter User Fonts Demo",
       primary: Colors.deepPurple,
       secondary: Colors.deepPurpleAccent,
       // themeMode: ThemeMode.light,
       themeMode: ThemeMode.dark,
       fontFamily: FontSettings.of(context)!.fontFamily,
       fontSizeFactor: FontSettings.of(context)!.fontSizeFactor,
-      home: const MyHomePage(title: "Flutter User Font Test"),
+      home: const MyHomePage(title: "Flutter User Fonts Demo"),
       routes: {
         "/settings": (context) => const SettingsPage(),
       },

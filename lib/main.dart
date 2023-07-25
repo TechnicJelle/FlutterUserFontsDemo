@@ -2,6 +2,7 @@ import "dart:math";
 
 import "package:flutter/material.dart";
 import "package:lorem_ipsum/lorem_ipsum.dart";
+import "package:url_launcher/url_launcher.dart";
 
 import "font.dart";
 import "settings.dart";
@@ -44,6 +45,19 @@ class MyHomePage extends StatelessWidget {
         title: Text(title),
         actions: [
           IconButton(
+            icon: const Icon(Icons.public),
+            tooltip: "Open source GitHub repository",
+            onPressed: () async {
+              final Uri url = Uri.parse(
+                  "https://github.com/TechnicJelle/FlutterUserFontsDemo");
+              if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+                throw Exception("Could not launch $url");
+              }
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings),
+            tooltip: "Settings",
             onPressed: () => Navigator.push(
               context,
               MaterialPageRoute(
@@ -51,7 +65,6 @@ class MyHomePage extends StatelessWidget {
                 builder: (context) => const SettingsPage(),
               ),
             ),
-            icon: const Icon(Icons.settings),
           ),
         ],
       ),

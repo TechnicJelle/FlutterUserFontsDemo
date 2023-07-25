@@ -7,3 +7,6 @@ Try it out at [technicjelle.com/FlutterUserFontsDemo](https://technicjelle.com/F
 
 Feel free to use this as inspiration for similar features for your own app! :)  
 (In accordance with the [license](LICENSE))
+
+Most of the important things happen in [font.dart](lib/font.dart);
+the rest is just implementation and wrapping it in a nice UI.

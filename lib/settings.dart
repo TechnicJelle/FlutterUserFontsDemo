@@ -23,10 +23,10 @@ class SettingsPage extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () => FontProvider.fontSelectPopup(context),
+                onPressed: () => FontSettings.of(context)!.fontSelectPopup(),
                 child: const Text("Upload Font"),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 40),
               const Text(
                 "Slide to change the app's font scale:",
               ),
@@ -40,6 +40,18 @@ class SettingsPage extends StatelessWidget {
                 onChange: (double num) {
                   FontSettings.of(context)!.fontSizeFactor = num;
                 },
+              ),
+              const SizedBox(height: 40),
+              const Text(
+                "Click to reset to default:",
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  FontSettings.of(context)!.reset();
+                  Navigator.pop(context);
+                },
+                child: const Text("Reset Font Settings"),
               ),
             ],
           ),

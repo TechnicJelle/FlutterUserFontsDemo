@@ -18,27 +18,6 @@ class FontProvider extends StatefulWidget {
 
   @override
   State<FontProvider> createState() => FontProviderState();
-
-  static Future<void> fontSelectPopup(BuildContext context) async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ["ttf", "otf"],
-    );
-
-    if (result == null) return; // Dialog was canceled
-
-    String fontName = result.files.single.name;
-
-    Uint8List bytes;
-    if (kIsWeb) {
-      bytes = result.files.single.bytes!;
-    } else {
-      File sourceFile = File(result.files.single.path!);
-      bytes = await sourceFile.readAsBytes();
-    }
-
-    FontSettings.of(context)!._state._changeFontFamily(fontName, bytes);
-  }
 }
 
 class FontProviderState extends State<FontProvider> {
@@ -62,6 +41,13 @@ class FontProviderState extends State<FontProvider> {
 
     SharedPreferences.getInstance().then((SharedPreferences prefs) {
       return prefs.setString(storageKeyFontBytes, base64Encode(bytes));
+    });
+  }
+
+  void _resetFont() {
+    setState(() {
+      _fontFamily = null;
+      _fontSizeFactor = null;
     });
   }
 
@@ -127,6 +113,31 @@ class FontSettings extends InheritedWidget {
 
   double get fontSizeFactor => _fontSizeFactorData ?? 1.0;
   set fontSizeFactor(double num) => _state.changeFontSizeFactor(num);
+
+  void fontSelectPopup() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ["ttf", "otf"],
+    );
+
+    if (result == null) return; // Dialog was canceled
+
+    String fontName = result.files.single.name;
+
+    Uint8List bytes;
+    if (kIsWeb) {
+      bytes = result.files.single.bytes!;
+    } else {
+      File sourceFile = File(result.files.single.path!);
+      bytes = await sourceFile.readAsBytes();
+    }
+
+    _state._changeFontFamily(fontName, bytes);
+  }
+
+  void reset() {
+    _state._resetFont();
+  }
 
   static FontSettings? of(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<FontSettings>();

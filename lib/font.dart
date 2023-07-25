@@ -137,6 +137,10 @@ class FontSettings extends InheritedWidget {
 
   void reset() {
     _state._resetFont();
+    SharedPreferences.getInstance().then((SharedPreferences prefs) {
+      prefs.remove(storageKeyFontBytes);
+      prefs.remove(storageKeyFontScale);
+    });
   }
 
   static FontSettings? of(BuildContext context) {

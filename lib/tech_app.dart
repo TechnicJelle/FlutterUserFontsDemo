@@ -19,7 +19,6 @@ class TechApp extends MaterialApp {
   }) : super(
           theme: ThemeData(
             useMaterial3: false,
-            appBarTheme: AppBarTheme(color: primary),
             colorScheme: ColorScheme.light(
               primary: primary,
               secondary: secondary,
@@ -27,7 +26,6 @@ class TechApp extends MaterialApp {
           ),
           darkTheme: ThemeData(
             useMaterial3: false,
-            appBarTheme: AppBarTheme(color: primary),
             colorScheme: ColorScheme.dark(
               primary: primary,
               secondary: secondary,
@@ -36,6 +34,7 @@ class TechApp extends MaterialApp {
           builder: (BuildContext context, Widget? child) {
             return Theme(
               data: Theme.of(context).copyWith(
+                appBarTheme: AppBarTheme(color: primary),
                 textTheme: Theme.of(context).textTheme.apply(
                       fontSizeFactor: fontSizeFactor ?? 1.0,
                       fontFamily: fontFamily,

@@ -30,7 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  file_picker: ^5.3.3
+  file_picker: ^10.3.6
   input_slider: ^0.3.1
   shared_preferences: ^2.2.0
   lorem_ipsum: ^0.0.3

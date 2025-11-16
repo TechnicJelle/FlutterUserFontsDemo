@@ -34,7 +34,7 @@ dependencies:
   input_slider: ^0.3.1
   shared_preferences: ^2.2.0
   lorem_ipsum: ^0.0.3
-  url_launcher: ^6.1.12
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:

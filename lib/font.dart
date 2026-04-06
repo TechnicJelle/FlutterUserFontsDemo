@@ -115,7 +115,7 @@ class FontSettings extends InheritedWidget {
   set fontSizeFactor(double num) => _state.changeFontSizeFactor(num);
 
   void fontSelectPopup() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
+    FilePickerResult? result = await FilePicker.pickFiles(
       type: FileType.custom,
       allowedExtensions: ["ttf", "otf"],
     );

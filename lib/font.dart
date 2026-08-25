@@ -1,9 +1,7 @@
 import "dart:async";
 import "dart:convert";
-import "dart:io";
 
 import "package:file_picker/file_picker.dart";
-import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:shared_preferences/shared_preferences.dart";
@@ -115,23 +113,14 @@ class FontSettings extends InheritedWidget {
   set fontSizeFactor(double num) => _state.changeFontSizeFactor(num);
 
   void fontSelectPopup() async {
-    FilePickerResult? result = await FilePicker.pickFiles(
+    PlatformFile? result = await FilePicker.pickFile(
       type: FileType.custom,
       allowedExtensions: ["ttf", "otf"],
     );
-
     if (result == null) return; // Dialog was canceled
 
-    String fontName = result.files.single.name;
-
-    Uint8List bytes;
-    if (kIsWeb) {
-      bytes = result.files.single.bytes!;
-    } else {
-      File sourceFile = File(result.files.single.path!);
-      bytes = await sourceFile.readAsBytes();
-    }
-
+    String fontName = result.name;
+    Uint8List bytes = await result.readAsBytes();
     _state._changeFontFamily(fontName, bytes);
   }
 

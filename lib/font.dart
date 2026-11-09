@@ -98,14 +98,12 @@ class FontSettings extends InheritedWidget {
   final FontProviderState _state;
 
   const FontSettings({
-    required String? fontFamilyData,
-    required double? fontSizeFactorData,
-    required FontProviderState state,
+    required this._fontFamilyData,
+    required this._fontSizeFactorData,
+    required this._state,
     required super.child,
     super.key,
-  })  : _state = state,
-        _fontFamilyData = fontFamilyData,
-        _fontSizeFactorData = fontSizeFactorData;
+  });
 
   String? get fontFamily => _fontFamilyData;
 
